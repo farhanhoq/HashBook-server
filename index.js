@@ -37,6 +37,41 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/users', async (req, res) => {
+            const query = {};
+            const result = await users.find(query).toArray();
+            res.send(result)
+        })
+
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = {email: email};
+            const result = await users.findOne(query);
+            res.send(result)
+        })
+
+        app.post('/users', async(req, res) => {
+            const user = req.body;
+            const result = await users.insertOne(user);
+            res.send(result);
+        })
+
+        app.post('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const options = {upsert: true}
+            console.log(id)
+            const user = req.body;
+            const updateDoc = {
+                $set: {
+                    name: user.name,
+                    email: user.email
+                }
+            }
+            const result = await users.update(filter, options, updateDoc);
+            res.send(result)
+        })
+
     }
     finally {
 
